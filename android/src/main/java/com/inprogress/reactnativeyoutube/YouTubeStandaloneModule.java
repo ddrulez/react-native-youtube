@@ -83,7 +83,8 @@ public class YouTubeStandaloneModule extends ReactContextBaseJavaModule {
         final Intent intent = YouTubeStandalonePlayer.createVideoIntent(
                     currentActivity, apiKey, videoId, startTimeMillis, autoplay, lightboxMode);
 
-        play(intent, promise);
+        // play(intent, promise);
+        startYTPlayer(apiKey, videoId, promise);
     }
 
     @ReactMethod
@@ -151,5 +152,17 @@ public class YouTubeStandaloneModule extends ReactContextBaseJavaModule {
     private boolean canResolveIntent(Intent intent) {
         List<ResolveInfo> resolveInfo = mReactContext.getPackageManager().queryIntentActivities(intent, 0);
         return resolveInfo != null && !resolveInfo.isEmpty();
+    }
+
+    public void startYTPlayer(final String apiKey, final String videoId, final Promise promise) {
+        Activity currentActivity = getCurrentActivity();
+        if (currentActivity == null) {
+            promise.reject(E_ACTIVITY_DOES_NOT_EXIST, "Activity doesn't exist");
+            return;
+        }
+        Intent intent = new Intent(getCurrentActivity(), YTPlayer.class);
+        intent.putExtra("apiKey", apiKey);
+        intent.putExtra("videoId", videoId);
+        getCurrentActivity().startActivity(intent);
     }
 }
